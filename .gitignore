@@ -1,0 +1,51 @@
+# Built files
+*.apk
+*.aar
+*.ap_
+*.aab
+
+# Gradle files
+.gradle/
+build/
+bin/
+out/
+release/
+
+# Local configuration files
+*.iml
+.idea/
+.DS_Store
+*.swp
+*.swo
+
+# Keystore files
+*.jks
+*.keystore
+
+# Firebase
+google-services.json
+google-services-debug.json
+
+# Logs
+*.log
+logs/
+
+# Android Studio
+captures/
+.navigation/
+.idea/caches/
+.idea/libraries/
+.idea/modules.xml
+.idea/workspace.xml
+.idea/navEditor.xml
+
+# Kotlin
+*.kapt
+.kapt/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db

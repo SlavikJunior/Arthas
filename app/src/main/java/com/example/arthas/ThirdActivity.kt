@@ -61,8 +61,8 @@ class ThirdActivity : ComponentActivity() {
                 Button(
                     onClick = {
                         var intent = Intent(this@ThirdActivity, MainActivity::class.java)
+                        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
                         intent.putExtra("value", value)
-//                        intent = intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         startActivity(intent)
 
                     },

@@ -12,33 +12,37 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 
-class MainActivity : ComponentActivity() {
+class SecondActivity : ComponentActivity() {
+
+    lateinit var value: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        value = if (intent.getStringExtra("value").isNullOrBlank())
+            "Default value"
+        else
+            intent.getStringExtra("value") as String
+
         setContent {
             SetUpActivity()
         }
     }
 
-
     @Composable
     @Preview(showBackground = true, showSystemUi = true)
     fun SetUpActivity() {
         Box(
+            contentAlignment = Alignment.Center,
             modifier = Modifier
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center
+                .fillMaxSize()
         ) {
             Column(
                 verticalArrangement = Arrangement.SpaceEvenly,
@@ -47,34 +51,14 @@ class MainActivity : ComponentActivity() {
                     .fillMaxWidth()
                     .fillMaxHeight(0.66F)
             ) {
-                var value by remember { mutableStateOf("") }
-
-                TextField(
-                    value = value,
-                    onValueChange = { value = it },
-                    placeholder = {
-                        Text(text = getString(R.string.text_field_placeholder))
-                    }
+                Text(
+                    text = value,
+                    fontSize = 28.sp
                 )
 
                 Button(
                     onClick = {
-                        val intent = Intent(this@MainActivity, SecondActivity::class.java)
-                        intent.putExtra("value", value)
-                        startActivity(intent)
-
-                    },
-                    content = {
-                        Text(
-                            text = getString(R.string.go_to_second_activity),
-                            fontSize = 28.sp
-                        )
-                    }
-                )
-
-                Button(
-                    onClick = {
-                        val intent = Intent(this@MainActivity, ThirdActivity::class.java)
+                        val intent = Intent(this@SecondActivity, ThirdActivity::class.java)
                         intent.putExtra("value", value)
                         startActivity(intent)
 
@@ -82,7 +66,24 @@ class MainActivity : ComponentActivity() {
                     content = {
                         Text(
                             text = getString(R.string.go_to_third_activity),
-                            fontSize = 28.sp
+                            fontSize = 28.sp,
+                            textAlign = TextAlign.Center
+                        )
+                    },
+                )
+
+                Button(
+                    onClick = {
+                        val intent = Intent(this@SecondActivity, MainActivity::class.java)
+                        intent.putExtra("value", value)
+                        startActivity(intent)
+
+                    },
+                    content = {
+                        Text(
+                            text = getString(R.string.go_to_main_activity),
+                            fontSize = 28.sp,
+                            textAlign = TextAlign.Center
                         )
                     },
                 )

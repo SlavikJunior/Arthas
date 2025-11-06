@@ -1,3 +1,28 @@
 <resources>
     <string name="app_name">Arthas</string>
+
+    <!--FirstScreen -->
+    <string name="email_text_field_hint">Email</string>
+    <string name="password_text_field_hint">Password</string>
+    <string name="toast_email_empty">Email is empty</string>
+    <string name="toast_password_empty">Password is empty</string>
+    <string name="toast_email_invalid">Invalid Email</string>
+    <string name="toast_password_invalid">Invalid password</string>
+    <string name="btn_navigate_to_the_second_screen">Navigate to the second screen</string>
+    <!--FirstScreen END -->
+
+    <!--SecondScreen -->
+    <string name="btn_navigate_to_the_third_screen">Navigate to the third screen</string>
+    <string name="theme_brown">Brown theme</string>
+    <string name="theme_violette">Violette theme</string>
+    <string name="theme_blue">Blue theme</string>
+    <string name="theme_system">System theme</string>
+    <!--SecondScreen END -->
+
+    <!--ThirdScreen -->
+    <string name="title_text_field_hint">Title</string>
+    <string name="description_text_field_hint">Description</string>
+    <string name="toast_title_empty">Title is empty</string>
+    <string name="btn_save_and_return">Save and return</string>
+    <!--ThirdScreen END -->
 </resources>

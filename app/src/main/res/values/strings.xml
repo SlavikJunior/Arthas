@@ -1,28 +1,63 @@
 <resources>
     <string name="app_name">Arthas</string>
+    <string name="notification_settings">Settings</string>
+    <string name="edit_notification">Edit</string>
+    <string name="messages">Messages</string>
 
-    <!--FirstScreen -->
-    <string name="email_text_field_hint">Email</string>
-    <string name="password_text_field_hint">Password</string>
-    <string name="toast_email_empty">Email is empty</string>
-    <string name="toast_password_empty">Password is empty</string>
-    <string name="toast_email_invalid">Invalid Email</string>
-    <string name="toast_password_invalid">Invalid password</string>
-    <string name="btn_navigate_to_the_second_screen">Navigate to the second screen</string>
-    <!--FirstScreen END -->
+    <!-- Notification Settings Screen -->
+    <string name="notification_settings_title">Notification Settings</string>
+    <string name="title_field">Title *</string>
+    <string name="title_required">Title is required</string>
+    <string name="description_field">Description</string>
+    <string name="expand_long_notifications">Expand long notifications</string>
+    <string name="notification_priority">Notification Priority</string>
+    <string name="open_app_on_click">Open app on notification click</string>
+    <string name="add_reply_action">Add Reply Action</string>
+    <string name="create_notification">Create Notification</string>
+    <string name="title_cannot_be_empty">Title cannot be empty</string>
+    <string name="notification_created">Notification created!</string>
 
-    <!--SecondScreen -->
-    <string name="btn_navigate_to_the_third_screen">Navigate to the third screen</string>
-    <string name="theme_brown">Brown theme</string>
-    <string name="theme_violette">Violette theme</string>
-    <string name="theme_blue">Blue theme</string>
-    <string name="theme_system">System theme</string>
-    <!--SecondScreen END -->
+    <!-- Notification Edit Screen -->
+    <string name="edit_notification_title">Edit Notification</string>
+    <string name="notification_id_field">Notification ID</string>
+    <string name="new_text_field">New Text</string>
+    <string name="update_notification">Update Notification</string>
+    <string name="remove_all_notifications">Remove All Notifications</string>
+    <string name="notification_updated">Notification updated!</string>
+    <string name="notification_not_found">Notification not found!</string>
+    <string name="invalid_notification_id">Invalid notification ID</string>
+    <string name="all_notifications_removed">All notifications removed!</string>
+    <string name="no_notifications_to_remove">No notifications to remove</string>
 
-    <!--ThirdScreen -->
-    <string name="title_text_field_hint">Notification title</string>
-    <string name="description_text_field_hint">Notification description</string>
-    <string name="toast_title_empty">Title is empty</string>
-    <string name="btn_save_and_return">Save and return</string>
-    <!--ThirdScreen END -->
+    <!-- Messages Screen -->
+    <string name="messages_title">Messages</string>
+    <string name="type_message_hint">Type a message...</string>
+    <string name="send_button">Send</string>
+
+    <!-- Themes -->
+    <string name="theme_brown">Brown</string>
+    <string name="theme_violette">Violette</string>
+    <string name="theme_blue">Blue</string>
+    <string name="theme_system">System</string>
+
+    <!-- Notification Channels -->
+    <string name="channel_name_default">Default Channel</string>
+    <string name="channel_description_default">Default notifications channel</string>
+
+    <!-- Common -->
+    <string name="reply_action_label">Type your reply here</string>
+    <string name="reply_button">Reply</string>
+    <string name="updated_notification_title">Updated Notification</string>
+
+    <!-- Notification Channel Names -->
+    <string name="high_priority_channel">High Importance</string>
+    <string name="default_priority_channel">Default Importance</string>
+    <string name="low_priority_channel">Low Importance</string>
+    <string name="min_priority_channel">Min Importance</string>
+
+    <!-- Notification Channel Descriptions -->
+    <string name="high_priority_description">High priority notifications</string>
+    <string name="default_priority_description">Default priority notifications</string>
+    <string name="low_priority_description">Low priority notifications</string>
+    <string name="min_priority_description">Min priority notifications</string>
 </resources>

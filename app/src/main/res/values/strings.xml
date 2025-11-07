@@ -28,11 +28,16 @@
     <string name="invalid_notification_id">Invalid notification ID</string>
     <string name="all_notifications_removed">All notifications removed!</string>
     <string name="no_notifications_to_remove">No notifications to remove</string>
+    <string name="available_notification_ids">Available Notification IDs:</string>
+    <string name="main_notification">• %1$d  (main notification)</string>
+    <string name="try_using_id">Try using ID:  %1$d</string>
 
     <!-- Messages Screen -->
     <string name="messages_title">Messages</string>
     <string name="type_message_hint">Type a message...</string>
     <string name="send_button">Send</string>
+    <string name="notification_id_for_editing">Notification ID for editing:</string>
+    <string name="use_this_id_for_update">Use this ID in Edit screen to update notifications</string>
 
     <!-- Themes -->
     <string name="theme_brown">Brown</string>

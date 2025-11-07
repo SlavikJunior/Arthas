@@ -20,8 +20,8 @@
     <!--SecondScreen END -->
 
     <!--ThirdScreen -->
-    <string name="title_text_field_hint">Title</string>
-    <string name="description_text_field_hint">Description</string>
+    <string name="title_text_field_hint">Notification title</string>
+    <string name="description_text_field_hint">Notification description</string>
     <string name="toast_title_empty">Title is empty</string>
     <string name="btn_save_and_return">Save and return</string>
     <!--ThirdScreen END -->

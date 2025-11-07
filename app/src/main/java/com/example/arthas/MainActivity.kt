@@ -14,7 +14,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.arthas.navigation.NavRoute
-import com.example.arthas.screen.FirstScreen
 import com.example.arthas.screen.SecondScreen
 import com.example.arthas.screen.ThirdScreen
 import com.example.arthas.ui.theme.ArthasTheme
@@ -36,16 +35,13 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     NavHost(
                         navController = navController,
-                        startDestination = NavRoute.FirstScreen.destination
+                        startDestination = NavRoute.SettingsScreen.destination
                     ) {
-                        composable(route = NavRoute.FirstScreen.destination) {
-                            FirstScreen(navController)
-                        }
                         composable(route = NavRoute.SecondScreen.destination + "/{${Keys.EMAIL_KEY}}") { stackEntry ->
                             val email = stackEntry.arguments?.getString(Keys.EMAIL_KEY) ?: ""
                             SecondScreen(navController, email)
                         }
-                        composable(route = NavRoute.ThirdScreen.destination) {
+                        composable(route = NavRoute.SettingsScreen.destination) {
                             ThirdScreen(navController)
                         }
                     }

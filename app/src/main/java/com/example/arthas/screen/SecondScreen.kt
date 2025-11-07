@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.arthas.Keys
@@ -44,12 +45,12 @@ import com.example.arthas.ui.theme.ViolettePrimary
 
 @Composable
 fun SecondScreen(
-    navController: NavController,
-    email: String
+    navController: NavController? = null,
+    email: String = "sample@mail.ru"
 ) {
     var notes by rememberSaveable { mutableStateOf(listOf<Note>()) }
 
-    val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
+    val savedStateHandle = navController!!.currentBackStackEntry?.savedStateHandle
     val title = savedStateHandle?.get<String>(Keys.TITLE_KEY)
     val description = savedStateHandle?.get<String>(Keys.DESCRIPTION_KEY)
 
@@ -104,7 +105,7 @@ fun SecondScreen(
 
         Button(
             onClick = {
-                navController.navigate(NavRoute.ThirdScreen.destination)
+                navController.navigate(NavRoute.SettingsScreen.destination)
             },
             content = {
                 Text(text = stringResource(R.string.btn_navigate_to_the_third_screen))
@@ -172,4 +173,10 @@ fun SetUpDropdownMenu() {
             }
         }
     }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun SecondScreenPreview() {
+    SecondScreen()
 }

@@ -35,6 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -73,10 +74,10 @@ fun MainScreen(
                 verticalArrangement = Arrangement.SpaceAround,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                RowWithTextAndSwitch("is sequentially", state.isSequentially) { }
-                RowWithTextAndSwitch("is parallel", state.isParallel) { }
-                RowWithTextAndSwitch("is delayed start", state.isDelayedStart) { }
-                RowWithTextAndSwitch("is background work", state.isBackgroundWork) { }
+                RowWithTextAndSwitch(stringResource(R.string.is_sequentially), state.isSequentially) { }
+                RowWithTextAndSwitch(stringResource(R.string.is_parallel), state.isParallel) { }
+                RowWithTextAndSwitch(stringResource(R.string.is_delayed_start), state.isDelayedStart) { }
+                RowWithTextAndSwitch(stringResource(R.string.is_background_work), state.isBackgroundWork) { }
             }
         }
 
@@ -98,7 +99,7 @@ fun MainScreen(
                         .padding(mediumPadding),
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Text("pick count of started coroutines")
+                    Text(stringResource(R.string.coroutine_slider_label))
                 }
 
                 CoroutineSlider(
@@ -172,7 +173,7 @@ private fun DropDownAndButtons(
                 onStartClicked()
             }
         ) {
-            Text("start")
+            Text(stringResource(R.string.start_label))
         }
 
         Button(
@@ -180,7 +181,7 @@ private fun DropDownAndButtons(
                 onCancelClicked()
             }
         ) {
-            Text("cansel")
+            Text(stringResource(R.string.cancel_label))
         }
 
         IconButton(
@@ -188,7 +189,7 @@ private fun DropDownAndButtons(
         ) {
             Icon(
                 imageVector = Icons.Default.Menu,
-                contentDescription = "Menu"
+                contentDescription = stringResource(R.string.pick_dispatcher_content_description)
             )
         }
 

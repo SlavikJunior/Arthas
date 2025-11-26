@@ -1,6 +1,7 @@
 package com.example.arthas.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -34,11 +35,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.arthas.R
 import java.util.Timer
@@ -58,7 +61,8 @@ fun MainScreen(
 //            .verticalScroll(rememberScrollState())
             .safeDrawingPadding()
             .padding(paddingValues)
-            .fillMaxSize(),
+            .fillMaxSize()
+        ,
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -74,10 +78,23 @@ fun MainScreen(
                 verticalArrangement = Arrangement.SpaceAround,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                RowWithTextAndSwitch(stringResource(R.string.is_sequentially), state.isSequentially) { }
-                RowWithTextAndSwitch(stringResource(R.string.is_parallel), state.isParallel) { }
-                RowWithTextAndSwitch(stringResource(R.string.is_delayed_start), state.isDelayedStart) { }
-                RowWithTextAndSwitch(stringResource(R.string.is_background_work), state.isBackgroundWork) { }
+
+                RowWithTextAndSwitch(
+                    stringResource(R.string.is_sequentially),
+                    state.isSequentially
+                ) { viewModel.pickSequentiallyMode() }
+                RowWithTextAndSwitch(
+                    stringResource(R.string.is_parallel),
+                    state.isParallel
+                ) { viewModel.pickParallelMode() }
+                RowWithTextAndSwitch(
+                    stringResource(R.string.is_delayed_start),
+                    state.isDelayedStart
+                ) { viewModel.pickDelayedMode() }
+                RowWithTextAndSwitch(
+                    stringResource(R.string.is_background_work),
+                    state.isBackgroundWork
+                ) { viewModel.pickBackgroundWorkMode() }
             }
         }
 
@@ -112,14 +129,11 @@ fun MainScreen(
                     paddingValues = mediumPadding,
                     onStartClicked = {},
                     onCancelClicked = {}
-                ) {
-
+                ) { pickedDispatcher ->
+                    viewModel.dispatchersChanged(pickedDispatcher)
                 }
             }
         }
-
-        if (state.isLoading)
-            ProgressState(viewModel)
     }
 }
 

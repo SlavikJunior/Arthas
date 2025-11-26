@@ -59,4 +59,5 @@ dependencies {
 
     implementation(libs.androidx.lifecycle.viewmodel)
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+    implementation(libs.androidx.constraintlayout.compose)
 }

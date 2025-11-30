@@ -1,7 +1,7 @@
 package com.example.arthas.ui
 
 import androidx.lifecycle.ViewModel
-import com.example.arthas.computation
+import com.example.arthas.Computer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -67,8 +67,8 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun startComputation(scope: CoroutineScope) =
-        computation(
+    fun startComputation(scope: CoroutineScope) {
+        Computer.computation(
             countOfCoroutines = _uiState.value.coroutinesCount.toInt(),
             scope = scope,
             dispatcher = when(_uiState.value.currentDispatcher) {
@@ -79,6 +79,17 @@ class MainViewModel : ViewModel() {
             },
             isSequentially = _uiState.value.isSequentially
         )
+
+        _uiState.update { currentState ->
+            currentState.copy(isLoading = true)
+        }
+    }
+
+    fun stopComputation() {
+        _uiState.update { currentState ->
+            currentState.copy(isLoading = false)
+        }
+    }
 
     private fun resetSettings() {
         _uiState.value = MainUiState()

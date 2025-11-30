@@ -1,6 +1,7 @@
 package com.example.arthas.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -50,95 +51,109 @@ fun MainScreen(
     val state by viewModel.uiState.collectAsState()
     val mediumPadding = dimensionResource(R.dimen.padding_medium)
 
-    Column(
+    Box(
         modifier = Modifier
             .statusBarsPadding()
             .navigationBarsPadding()
             .safeDrawingPadding()
             .padding(paddingValues)
-            .fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .fillMaxSize()
     ) {
-        Surface(
-            modifier = Modifier.padding(mediumPadding * 2),
-            shape = RoundedCornerShape(4.dp),
-            shadowElevation = 4.dp,
+        Column(
+            modifier = Modifier.align(Alignment.TopCenter),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = mediumPadding),
-                verticalArrangement = Arrangement.SpaceAround,
-                horizontalAlignment = Alignment.CenterHorizontally
+            Surface(
+                modifier = Modifier.padding(mediumPadding * 2),
+                shape = RoundedCornerShape(4.dp),
+                shadowElevation = 4.dp,
             ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = mediumPadding),
+                    verticalArrangement = Arrangement.SpaceAround,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
 
-                RowWithTextAndSwitch(
-                    stringResource(R.string.is_sequentially),
-                    state.isSequentially
-                ) { viewModel.changeSequentiallyMode() }
-                RowWithTextAndSwitch(
-                    stringResource(R.string.is_parallel),
-                    state.isParallel
-                ) { viewModel.changeParallelMode() }
-                RowWithTextAndSwitch(
-                    stringResource(R.string.is_delayed_start),
-                    state.isDelayedStart,
-                ) { viewModel.changeDelayedMode(it) }
-                RowWithTextAndSwitch(
-                    stringResource(R.string.is_background_work),
-                    state.isBackgroundWork
-                ) { viewModel.changeBackgroundWorkMode(it) }
+                    RowWithTextAndSwitch(
+                        stringResource(R.string.is_sequentially),
+                        state.isSequentially
+                    ) { viewModel.changeSequentiallyMode() }
+                    RowWithTextAndSwitch(
+                        stringResource(R.string.is_parallel),
+                        state.isParallel
+                    ) { viewModel.changeParallelMode() }
+                    RowWithTextAndSwitch(
+                        stringResource(R.string.is_delayed_start),
+                        state.isDelayedStart,
+                    ) { viewModel.changeDelayedMode(it) }
+                    RowWithTextAndSwitch(
+                        stringResource(R.string.is_background_work),
+                        state.isBackgroundWork
+                    ) { viewModel.changeBackgroundWorkMode(it) }
+                }
+            }
+
+            Surface(
+                modifier = Modifier.padding(mediumPadding * 2),
+                shape = RoundedCornerShape(4.dp),
+                shadowElevation = 4.dp,
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = mediumPadding),
+                    verticalArrangement = Arrangement.SpaceAround,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(mediumPadding),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(stringResource(R.string.coroutine_slider_label))
+                    }
+
+                    CoroutineSlider(
+                        paddingValues = mediumPadding,
+                        value = state.coroutinesCount,
+                        onValueChange = { viewModel.changeCoroutinesCount(it) }
+                    )
+
+                    DropDownAndButtons(
+                        paddingValues = mediumPadding,
+                        onStartClicked = { viewModel.startComputation(scope) },
+                        onCancelClicked = { viewModel.stopComputation() }
+                    ) { pickedDispatcher ->
+                        viewModel.changeDispatcher(pickedDispatcher)
+                    }
+                }
             }
         }
 
-        Surface(
-            modifier = Modifier.padding(mediumPadding * 2),
-            shape = RoundedCornerShape(4.dp),
-            shadowElevation = 4.dp,
-        ) {
-            Column(
+        if (state.isLoading) {
+            ProgressState(
+                viewModel = viewModel,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = mediumPadding),
-                verticalArrangement = Arrangement.SpaceAround,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(mediumPadding),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(stringResource(R.string.coroutine_slider_label))
-                }
-
-                CoroutineSlider(
-                    paddingValues = mediumPadding,
-                    value = state.coroutinesCount,
-                    onValueChange = { viewModel.changeCoroutinesCount(it) }
-                )
-
-                DropDownAndButtons(
-                    paddingValues = mediumPadding,
-                    onStartClicked = { viewModel.startComputation(scope) },
-                    onCancelClicked = {}
-                ) { pickedDispatcher ->
-                    viewModel.changeDispatcher(pickedDispatcher)
-                }
-            }
+                    .padding(mediumPadding * 4)
+                    .align(Alignment.BottomCenter)
+                    .size(80.dp)
+            )
         }
     }
 }
 
 @Composable
-private fun ProgressState(viewModel: MainViewModel) {
+private fun ProgressState(viewModel: MainViewModel, modifier: Modifier) {
     val state by viewModel.uiState.collectAsState()
 
     CircularProgressIndicator(
         progress = { state.progress },
-        modifier = Modifier.size(80.dp)
-    )
+        modifier = modifier
+        )
 }
 
 @Composable

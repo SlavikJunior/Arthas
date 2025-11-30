@@ -1,6 +1,8 @@
 package com.example.arthas.ui
 
 import androidx.lifecycle.ViewModel
+import com.example.arthas.computation
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -13,7 +15,7 @@ enum class Dispatchers {
 }
 
 data class MainUiState(
-    val currentCountOnSlider: Float = 0.1F,
+    val coroutinesCount: Float = 10F,
     val currentDispatcher: Dispatchers = Dispatchers.Default,
     val isSequentially: Boolean = true,
     val isParallel: Boolean = !isSequentially,
@@ -31,34 +33,52 @@ class MainViewModel : ViewModel() {
         resetSettings()
     }
 
-    fun dispatchersChanged(dispatcher: Dispatchers) {
+    fun changeDispatcher(dispatcher: Dispatchers) {
         _uiState.update { currentState ->
             currentState.copy(currentDispatcher = dispatcher)
         }
     }
 
-    fun pickSequentiallyMode() {
+    fun changeSequentiallyMode() {
         _uiState.update { currentState ->
-            currentState.copy(isSequentially = true)
+            currentState.copy(
+                isSequentially = !currentState.isSequentially,
+                isParallel = !currentState.isParallel
+            )
         }
     }
 
-    fun pickParallelMode() {
+    fun changeParallelMode() =
+        changeSequentiallyMode()
+    fun changeDelayedMode(isDelayed: Boolean) {
         _uiState.update { currentState ->
-            currentState.copy(isParallel = true)
+            currentState.copy(isDelayedStart = isDelayed)
+        }
+    }
+    fun changeBackgroundWorkMode(isBackgroundWork: Boolean) {
+        _uiState.update { currentState ->
+            currentState.copy(isBackgroundWork = isBackgroundWork)
         }
     }
 
-    fun pickDelayedMode() {
+    fun changeCoroutinesCount(currentCountOnSlider: Float) {
         _uiState.update { currentState ->
-            currentState.copy(isDelayedStart = true)
+            currentState.copy(coroutinesCount = currentCountOnSlider)
         }
     }
-    fun pickBackgroundWorkMode() {
-        _uiState.update { currentState ->
-            currentState.copy(isBackgroundWork = true)
-        }
-    }
+
+    fun startComputation(scope: CoroutineScope) =
+        computation(
+            countOfCoroutines = _uiState.value.coroutinesCount.toInt(),
+            scope = scope,
+            dispatcher = when(_uiState.value.currentDispatcher) {
+                Dispatchers.Default -> kotlinx.coroutines.Dispatchers.Default
+                Dispatchers.Main -> kotlinx.coroutines.Dispatchers.Main
+                Dispatchers.Unconfined -> kotlinx.coroutines.Dispatchers.Unconfined
+                Dispatchers.IO -> kotlinx.coroutines.Dispatchers.IO
+            },
+            isSequentially = _uiState.value.isSequentially
+        )
 
     private fun resetSettings() {
         _uiState.value = MainUiState()

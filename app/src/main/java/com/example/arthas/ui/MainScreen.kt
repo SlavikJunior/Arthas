@@ -1,7 +1,6 @@
 package com.example.arthas.ui
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -15,12 +14,10 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Slider
@@ -31,26 +28,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.arthas.R
-import java.util.Timer
 
 @Composable
 fun MainScreen(
     viewModel: MainViewModel = viewModel(),
     paddingValues: PaddingValues = PaddingValues()
 ) {
+    val scope = rememberCoroutineScope()
     val state by viewModel.uiState.collectAsState()
     val mediumPadding = dimensionResource(R.dimen.padding_medium)
 
@@ -58,11 +54,9 @@ fun MainScreen(
         modifier = Modifier
             .statusBarsPadding()
             .navigationBarsPadding()
-//            .verticalScroll(rememberScrollState())
             .safeDrawingPadding()
             .padding(paddingValues)
-            .fillMaxSize()
-        ,
+            .fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -82,19 +76,19 @@ fun MainScreen(
                 RowWithTextAndSwitch(
                     stringResource(R.string.is_sequentially),
                     state.isSequentially
-                ) { viewModel.pickSequentiallyMode() }
+                ) { viewModel.changeSequentiallyMode() }
                 RowWithTextAndSwitch(
                     stringResource(R.string.is_parallel),
                     state.isParallel
-                ) { viewModel.pickParallelMode() }
+                ) { viewModel.changeParallelMode() }
                 RowWithTextAndSwitch(
                     stringResource(R.string.is_delayed_start),
-                    state.isDelayedStart
-                ) { viewModel.pickDelayedMode() }
+                    state.isDelayedStart,
+                ) { viewModel.changeDelayedMode(it) }
                 RowWithTextAndSwitch(
                     stringResource(R.string.is_background_work),
                     state.isBackgroundWork
-                ) { viewModel.pickBackgroundWorkMode() }
+                ) { viewModel.changeBackgroundWorkMode(it) }
             }
         }
 
@@ -121,16 +115,16 @@ fun MainScreen(
 
                 CoroutineSlider(
                     paddingValues = mediumPadding,
-                    value = state.currentCountOnSlider
-                ) {
-                }
+                    value = state.coroutinesCount,
+                    onValueChange = { viewModel.changeCoroutinesCount(it) }
+                )
 
                 DropDownAndButtons(
                     paddingValues = mediumPadding,
-                    onStartClicked = {},
+                    onStartClicked = { viewModel.startComputation(scope) },
                     onCancelClicked = {}
                 ) { pickedDispatcher ->
-                    viewModel.dispatchersChanged(pickedDispatcher)
+                    viewModel.changeDispatcher(pickedDispatcher)
                 }
             }
         }
@@ -161,7 +155,9 @@ private fun CoroutineSlider(
     ) {
         Slider(
             value = value,
-            onValueChange = { onValueChange(value) }
+            onValueChange = onValueChange,
+            valueRange = 10f..100f,
+            steps = 18
         )
     }
 }
@@ -183,24 +179,18 @@ private fun DropDownAndButtons(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Button(
-            onClick = {
-                onStartClicked()
-            }
+            onClick = { onStartClicked() }
         ) {
             Text(stringResource(R.string.start_label))
         }
 
         Button(
-            onClick = {
-                onCancelClicked()
-            }
+            onClick = { onCancelClicked() }
         ) {
             Text(stringResource(R.string.cancel_label))
         }
 
-        IconButton(
-            onClick = { menuExpanded = !menuExpanded }
-        ) {
+        IconButton(onClick = { menuExpanded = !menuExpanded }) {
             Icon(
                 imageVector = Icons.Default.Menu,
                 contentDescription = stringResource(R.string.pick_dispatcher_content_description)
@@ -256,24 +246,11 @@ private fun RowWithTextAndSwitch(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(
-            text = text,
-        )
+        Text(text = text)
         Switch(
             checked = checked,
-            onCheckedChange = { onCheckedChange(checked) },
+            onCheckedChange = onCheckedChange,
         )
-
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun FinalDialog() {
-    BasicAlertDialog(
-        onDismissRequest = {}
-    ) {
-
     }
 }
 

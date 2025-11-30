@@ -1,5 +1,6 @@
 package com.example.arthas.ui
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,19 +22,24 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -45,115 +51,116 @@ import com.example.arthas.R
 @Composable
 fun MainScreen(
     viewModel: MainViewModel = viewModel(),
-    paddingValues: PaddingValues = PaddingValues()
 ) {
-    val scope = rememberCoroutineScope()
     val state by viewModel.uiState.collectAsState()
     val mediumPadding = dimensionResource(R.dimen.padding_medium)
+    val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
 
-    Box(
-        modifier = Modifier
+    LaunchedEffect(Unit) {
+        viewModel.toastMessage.collect { message ->
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.snackbarMessage.collect { message ->
+            snackbarHostState.showSnackbar(message)
+        }
+    }
+
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+    ) { paddingValues ->
+        Box(modifier = Modifier
+            .padding(paddingValues)
             .statusBarsPadding()
             .navigationBarsPadding()
             .safeDrawingPadding()
-            .padding(paddingValues)
-            .fillMaxSize()
-    ) {
-        Column(
-            modifier = Modifier.align(Alignment.TopCenter),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Surface(
-                modifier = Modifier.padding(mediumPadding * 2),
-                shape = RoundedCornerShape(4.dp),
-                shadowElevation = 4.dp,
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = mediumPadding),
-                    verticalArrangement = Arrangement.SpaceAround,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
+            .fillMaxSize()) {
 
-                    RowWithTextAndSwitch(
-                        stringResource(R.string.is_sequentially),
-                        state.isSequentially
-                    ) { viewModel.changeSequentiallyMode() }
-                    RowWithTextAndSwitch(
-                        stringResource(R.string.is_parallel),
-                        state.isParallel
-                    ) { viewModel.changeParallelMode() }
-                    RowWithTextAndSwitch(
-                        stringResource(R.string.is_delayed_start),
-                        state.isDelayedStart,
-                    ) { viewModel.changeDelayedMode(it) }
-                    RowWithTextAndSwitch(
-                        stringResource(R.string.is_background_work),
-                        state.isBackgroundWork
-                    ) { viewModel.changeBackgroundWorkMode(it) }
-                }
-            }
-
-            Surface(
-                modifier = Modifier.padding(mediumPadding * 2),
-                shape = RoundedCornerShape(4.dp),
-                shadowElevation = 4.dp,
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = mediumPadding),
-                    verticalArrangement = Arrangement.SpaceAround,
-                    horizontalAlignment = Alignment.CenterHorizontally
+                Surface(
+                    modifier = Modifier.padding(mediumPadding * 2),
+                    shape = RoundedCornerShape(4.dp),
+                    shadowElevation = 4.dp,
                 ) {
-                    Row(
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(mediumPadding),
-                        horizontalArrangement = Arrangement.Center
+                            .padding(horizontal = mediumPadding),
+                        verticalArrangement = Arrangement.SpaceAround,
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(stringResource(R.string.coroutine_slider_label))
+                        RowWithTextAndSwitch(
+                            stringResource(R.string.is_sequentially),
+                            state.isSequentially,
+                        ) { viewModel.changeSequentiallyMode() }
+                        RowWithTextAndSwitch(
+                            stringResource(R.string.is_parallel),
+                            state.isParallel
+                        ) { viewModel.changeParallelMode() }
+                        RowWithTextAndSwitch(
+                            stringResource(R.string.is_delayed_start),
+                            state.isDelayedStart,
+                        ) { isChecked -> viewModel.changeDelayedMode(isChecked) }
+                        RowWithTextAndSwitch(
+                            stringResource(R.string.is_background_work),
+                            state.isBackgroundWork
+                        ) { isChecked -> viewModel.changeBackgroundWorkMode(isChecked) }
                     }
+                }
 
-                    CoroutineSlider(
-                        paddingValues = mediumPadding,
-                        value = state.coroutinesCount,
-                        onValueChange = { viewModel.changeCoroutinesCount(it) }
-                    )
+                Surface(
+                    modifier = Modifier.padding(mediumPadding * 2),
+                    shape = RoundedCornerShape(4.dp),
+                    shadowElevation = 4.dp,
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = mediumPadding),
+                        verticalArrangement = Arrangement.SpaceAround,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(mediumPadding),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text(stringResource(R.string.coroutine_slider_label))
+                        }
 
-                    DropDownAndButtons(
-                        paddingValues = mediumPadding,
-                        onStartClicked = { viewModel.startComputation(scope) },
-                        onCancelClicked = { viewModel.stopComputation() }
-                    ) { pickedDispatcher ->
-                        viewModel.changeDispatcher(pickedDispatcher)
+                        CoroutineSlider(
+                            paddingValues = mediumPadding,
+                            value = state.coroutinesCount,
+                            onValueChange = { count -> viewModel.changeCoroutinesCount(count) }
+                        )
+
+                        DropDownAndButtons(
+                            paddingValues = mediumPadding,
+                            onStartClicked = { viewModel.startComputation() },
+                            onCancelClicked = { viewModel.cancelComputation() },
+                            isLoading = state.isLoading
+                        ) { pickedDispatcher ->
+                            viewModel.changeDispatcher(pickedDispatcher)
+                        }
                     }
                 }
             }
-        }
 
-        if (state.isLoading) {
-            ProgressState(
-                viewModel = viewModel,
-                modifier = Modifier
-                    .padding(mediumPadding * 4)
-                    .align(Alignment.BottomCenter)
-                    .size(80.dp)
-            )
+            if (state.isLoading) {
+                CircularProgressIndicator(
+                    progress = { state.progress },
+                    modifier = Modifier.align(Alignment.BottomCenter).size(80.dp)
+                )
+            }
         }
     }
-}
-
-@Composable
-private fun ProgressState(viewModel: MainViewModel, modifier: Modifier) {
-    val state by viewModel.uiState.collectAsState()
-
-    CircularProgressIndicator(
-        progress = { state.progress },
-        modifier = modifier
-        )
 }
 
 @Composable
@@ -182,6 +189,7 @@ private fun DropDownAndButtons(
     paddingValues: Dp,
     onStartClicked: () -> Unit = {},
     onCancelClicked: () -> Unit = {},
+    isLoading: Boolean,
     onDispatcherChanged: (Dispatchers) -> Unit = {}
 ) {
     var menuExpanded by rememberSaveable { mutableStateOf(false) }
@@ -193,15 +201,11 @@ private fun DropDownAndButtons(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Button(
-            onClick = { onStartClicked() }
-        ) {
+        Button(onClick = { onStartClicked() }) {
             Text(stringResource(R.string.start_label))
         }
 
-        Button(
-            onClick = { onCancelClicked() }
-        ) {
+        Button(onClick = { onCancelClicked() }) {
             Text(stringResource(R.string.cancel_label))
         }
 
@@ -214,9 +218,7 @@ private fun DropDownAndButtons(
 
         DropdownMenu(
             expanded = menuExpanded,
-            onDismissRequest = {
-                menuExpanded = false
-            }
+            onDismissRequest = { menuExpanded = false }
         ) {
             DropdownMenuItem(
                 text = { Text(Dispatchers.Default.name) },
@@ -271,5 +273,6 @@ private fun RowWithTextAndSwitch(
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun MainScreenPreview() =
+fun MainScreenPreview() {
     MainScreen()
+}

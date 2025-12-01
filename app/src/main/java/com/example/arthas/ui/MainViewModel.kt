@@ -1,6 +1,5 @@
 package com.example.arthas.ui
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.arthas.ResetSettingsException
@@ -8,7 +7,6 @@ import com.example.arthas.ShowSnackbarException
 import com.example.arthas.ShowToastException
 import com.example.arthas.computation
 import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,10 +43,11 @@ class MainViewModel : ViewModel() {
     private val _snackbarMessage = MutableSharedFlow<String>()
     val snackbarMessage = _snackbarMessage.asSharedFlow()
 
+    private var computationJobs: List<Job> = emptyList()
     private var computationJob: Job? = null
+    private var stoppedCoroutineCount: Int = 0
 
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        Log.e(TAG, MESSAGE, throwable)
         viewModelScope.launch {
             when (throwable) {
                 is ShowToastException -> _toastMessage.emit(TOAST_EXCEPTION)
@@ -59,60 +58,77 @@ class MainViewModel : ViewModel() {
     }
 
     fun changeDispatcher(dispatcher: Dispatchers) {
-        _uiState.update { currentState ->
-            currentState.copy(currentDispatcher = dispatcher)
-        }
+        _uiState.update { it.copy(currentDispatcher = dispatcher) }
     }
 
     fun changeSequentiallyMode() {
-        _uiState.update { currentState ->
-            currentState.copy(
-                isSequentially = !currentState.isSequentially,
-                isParallel = !currentState.isParallel
-            )
+        _uiState.update { 
+            it.copy(isSequentially = !it.isSequentially, isParallel = !it.isParallel) 
         }
     }
 
     fun changeParallelMode() = changeSequentiallyMode()
 
     fun changeDelayedMode(isDelayed: Boolean) {
-        _uiState.update { currentState ->
-            currentState.copy(isDelayedStart = isDelayed)
-        }
+        _uiState.update { it.copy(isDelayedStart = isDelayed) }
     }
 
     fun changeBackgroundWorkMode(isBackgroundWork: Boolean) {
-        _uiState.update { currentState ->
-            currentState.copy(isBackgroundWork = isBackgroundWork)
-        }
+        _uiState.update { it.copy(isBackgroundWork = isBackgroundWork) }
     }
 
     fun changeCoroutinesCount(currentCountOnSlider: Float) {
-        _uiState.update { currentState ->
-            currentState.copy(coroutinesCount = currentCountOnSlider)
+        _uiState.update { it.copy(coroutinesCount = currentCountOnSlider) }
+    }
+
+    fun startComputation(isRestart: Boolean = false) {
+        val coroutineCount = if (isRestart) stoppedCoroutineCount else _uiState.value.coroutinesCount.toInt()
+        if (coroutineCount == 0) return
+
+        computationJob = viewModelScope.launch(coroutineExceptionHandler) {
+            computation(
+                countOfCoroutines = coroutineCount,
+                scope = this,
+                dispatcher = when (_uiState.value.currentDispatcher) {
+                    Dispatchers.Default -> kotlinx.coroutines.Dispatchers.Default
+                    Dispatchers.Main -> kotlinx.coroutines.Dispatchers.Main
+                    Dispatchers.Unconfined -> kotlinx.coroutines.Dispatchers.Unconfined
+                    Dispatchers.IO -> kotlinx.coroutines.Dispatchers.IO
+                },
+                isSequentially = _uiState.value.isSequentially,
+                isDelayedStart = _uiState.value.isDelayedStart,
+                onProgress = { progress -> _uiState.update { it.copy(progress = progress) } },
+                onLoadingChange = { isLoading -> _uiState.update { it.copy(isLoading = isLoading) } },
+                onJobsCreated = { jobs -> computationJobs = jobs },
+                onSuccess = {
+                    viewModelScope.launch { _toastMessage.emit(ON_SUCCESS) }
+                }
+            )
         }
     }
 
-    fun startComputation() {
-        computationJob = computation(
-            countOfCoroutines = _uiState.value.coroutinesCount.toInt(),
-            scope = viewModelScope,
-            dispatcher = when (_uiState.value.currentDispatcher) {
-                Dispatchers.Default -> kotlinx.coroutines.Dispatchers.Default
-                Dispatchers.Main -> kotlinx.coroutines.Dispatchers.Main
-                Dispatchers.Unconfined -> kotlinx.coroutines.Dispatchers.Unconfined
-                Dispatchers.IO -> kotlinx.coroutines.Dispatchers.IO
-            },
-            isSequentially = _uiState.value.isSequentially,
-            isDelayedStart = _uiState.value.isDelayedStart,
-            onProgress = { progress -> _uiState.update { it.copy(progress = progress) } },
-            onLoadingChange = { isLoading -> _uiState.update { it.copy(isLoading = isLoading) } },
-            onError = { error -> coroutineExceptionHandler.handleException(viewModelScope.coroutineContext, error) }
-        )
+    fun cancelComputation() {
+        val cancelledCount = computationJobs.count { it.isActive }
+        computationJobs.forEach { it.cancel() }
+        computationJob?.cancel()
+        _uiState.update { it.copy(isLoading = false) }
+        viewModelScope.launch {
+            _toastMessage.emit(ON_CANCELL.format(cancelledCount))
+        }
     }
 
-    fun cancelComputation() {
-        computationJob?.cancel()
+    fun onAppStop() {
+        if (!_uiState.value.isBackgroundWork) {
+            stoppedCoroutineCount = computationJobs.count { it.isActive }
+            cancelComputation()
+        }
+    }
+
+    fun onAppStart() {
+        if (!_uiState.value.isBackgroundWork && stoppedCoroutineCount > 0) {
+            startComputation(isRestart = true)
+            stoppedCoroutineCount = 0
+        }
     }
 
     private fun resetSettings() {
@@ -120,9 +136,9 @@ class MainViewModel : ViewModel() {
     }
 
     companion object {
-        private const val TAG = "MainViewModel"
-        private const val MESSAGE = "Caught exception"
         private const val TOAST_EXCEPTION = "Toast Exception"
         private const val SNACKBAR_EXCEPTION = "Snackbar Exception"
+        private const val ON_SUCCESS = "All coroutines finished successfully!"
+        private const val ON_CANCELL = "%d coroutines were cancelled"
     }
 }

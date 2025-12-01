@@ -2,7 +2,6 @@ package com.example.arthas.ui
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -72,92 +71,86 @@ fun MainScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { paddingValues ->
-        Box(modifier = Modifier
-            .padding(paddingValues)
-            .statusBarsPadding()
-            .navigationBarsPadding()
-            .safeDrawingPadding()
-            .fillMaxSize()) {
-
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .statusBarsPadding()
+                .navigationBarsPadding()
+                .safeDrawingPadding()
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Surface(
+                modifier = Modifier.padding(mediumPadding * 2),
+                shape = RoundedCornerShape(4.dp),
+                shadowElevation = 4.dp,
             ) {
-                Surface(
-                    modifier = Modifier.padding(mediumPadding * 2),
-                    shape = RoundedCornerShape(4.dp),
-                    shadowElevation = 4.dp,
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = mediumPadding),
+                    verticalArrangement = Arrangement.SpaceAround,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = mediumPadding),
-                        verticalArrangement = Arrangement.SpaceAround,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        RowWithTextAndSwitch(
-                            stringResource(R.string.is_sequentially),
-                            state.isSequentially,
-                        ) { viewModel.changeSequentiallyMode() }
-                        RowWithTextAndSwitch(
-                            stringResource(R.string.is_parallel),
-                            state.isParallel
-                        ) { viewModel.changeParallelMode() }
-                        RowWithTextAndSwitch(
-                            stringResource(R.string.is_delayed_start),
-                            state.isDelayedStart,
-                        ) { isChecked -> viewModel.changeDelayedMode(isChecked) }
-                        RowWithTextAndSwitch(
-                            stringResource(R.string.is_background_work),
-                            state.isBackgroundWork
-                        ) { isChecked -> viewModel.changeBackgroundWorkMode(isChecked) }
-                    }
-                }
-
-                Surface(
-                    modifier = Modifier.padding(mediumPadding * 2),
-                    shape = RoundedCornerShape(4.dp),
-                    shadowElevation = 4.dp,
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = mediumPadding),
-                        verticalArrangement = Arrangement.SpaceAround,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(mediumPadding),
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Text(stringResource(R.string.coroutine_slider_label))
-                        }
-
-                        CoroutineSlider(
-                            paddingValues = mediumPadding,
-                            value = state.coroutinesCount,
-                            onValueChange = { count -> viewModel.changeCoroutinesCount(count) }
-                        )
-
-                        DropDownAndButtons(
-                            paddingValues = mediumPadding,
-                            onStartClicked = { viewModel.startComputation() },
-                            onCancelClicked = { viewModel.cancelComputation() },
-                            isLoading = state.isLoading
-                        ) { pickedDispatcher ->
-                            viewModel.changeDispatcher(pickedDispatcher)
-                        }
-                    }
+                    RowWithTextAndSwitch(
+                        stringResource(R.string.is_sequentially),
+                        state.isSequentially,
+                    ) { viewModel.changeSequentiallyMode() }
+                    RowWithTextAndSwitch(
+                        stringResource(R.string.is_parallel),
+                        state.isParallel
+                    ) { viewModel.changeParallelMode() }
+                    RowWithTextAndSwitch(
+                        stringResource(R.string.is_delayed_start),
+                        state.isDelayedStart,
+                    ) { isChecked -> viewModel.changeDelayedMode(isChecked) }
+                    RowWithTextAndSwitch(
+                        stringResource(R.string.is_background_work),
+                        state.isBackgroundWork
+                    ) { isChecked -> viewModel.changeBackgroundWorkMode(isChecked) }
                 }
             }
 
-            if (state.isLoading) {
-                CircularProgressIndicator(
-                    progress = { state.progress },
-                    modifier = Modifier.align(Alignment.BottomCenter).size(80.dp)
-                )
+            Surface(
+                modifier = Modifier.padding(mediumPadding * 2),
+                shape = RoundedCornerShape(4.dp),
+                shadowElevation = 4.dp,
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = mediumPadding, vertical = mediumPadding),
+                    verticalArrangement = Arrangement.SpaceAround,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(mediumPadding),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(stringResource(R.string.coroutine_slider_label))
+                    }
+
+                    CoroutineSlider(
+                        paddingValues = mediumPadding,
+                        value = state.coroutinesCount,
+                        onValueChange = { count -> viewModel.changeCoroutinesCount(count) }
+                    )
+
+                    if (state.isLoading) {
+                        LoadingState(
+                            progress = state.progress,
+                            onCancelClicked = { viewModel.cancelComputation() }
+                        )
+                    } else {
+                        Controls(
+                            onStartClicked = { viewModel.startComputation() },
+                            onDispatcherChanged = { dispatcher -> viewModel.changeDispatcher(dispatcher) }
+                        )
+                    }
+                }
             }
         }
     }
@@ -185,28 +178,38 @@ private fun CoroutineSlider(
 }
 
 @Composable
-private fun DropDownAndButtons(
-    paddingValues: Dp,
-    onStartClicked: () -> Unit = {},
-    onCancelClicked: () -> Unit = {},
-    isLoading: Boolean,
-    onDispatcherChanged: (Dispatchers) -> Unit = {}
+private fun LoadingState(
+    progress: Float,
+    onCancelClicked: () -> Unit
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        CircularProgressIndicator(
+            progress = { progress },
+            modifier = Modifier.size(80.dp)
+        )
+        Button(onClick = onCancelClicked) {
+            Text(stringResource(R.string.cancel_label))
+        }
+    }
+}
+
+@Composable
+private fun Controls(
+    onStartClicked: () -> Unit,
+    onDispatcherChanged: (Dispatchers) -> Unit
 ) {
     var menuExpanded by rememberSaveable { mutableStateOf(false) }
 
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = paddingValues),
-        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Button(onClick = { onStartClicked() }) {
+        Button(onClick = onStartClicked) {
             Text(stringResource(R.string.start_label))
-        }
-
-        Button(onClick = { onCancelClicked() }) {
-            Text(stringResource(R.string.cancel_label))
         }
 
         IconButton(onClick = { menuExpanded = !menuExpanded }) {

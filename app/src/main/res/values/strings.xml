@@ -1,3 +1,110 @@
 <resources>
     <string name="app_name">Arthas</string>
+
+    <!-- Common -->
+    <string name="database_error">Ошибка во время обращения к базе данных!</string>
+    <!-- Common END -->
+
+    <!-- Login Screen -->
+    <string name="login_screen_title">Вход в аккаунт</string>
+    <string name="login_register_button">Регистрация</string>
+    <string name="login_email_label">Email</string>
+    <string name="login_password_label">Пароль</string>
+    <string name="login_button">Войти</string>
+    <string name="login_error_empty_fields">Email и пароль не могут быть пустыми!</string>
+    <!-- Login Screen END -->
+
+    <!-- Register Screen -->
+    <string name="register_screen_title">Регистрация</string>
+    <string name="register_button">Зарегистрироваться</string>
+    <string name="register_unknown_error">Непредвиденная ошибка!</string>
+    <!-- Register Screen END -->
+
+    <!-- Profile Screen -->
+    <string name="profile_screen_title">Профиль</string>
+    <string name="profile_avatar_content_description">Аватар</string>
+    <string name="profile_no_name_placeholder">(Имя не указано)</string>
+    <string name="profile_no_email_placeholder">(Email не указан)</string>
+    <string name="profile_logout_button">Выйти</string>
+    <string name="profile_delete_account_button">Удалить аккаунт</string>
+    <string name="profile_error_loading">Не удалось загрузить профиль</string>
+    <string name="profile_error_logout">Ошибка выхода</string>
+    <string name="profile_error_user_not_found">Пользователь не найден</string>
+    <string name="profile_error_user_deleted_permanently">Аккаунт перманентно удалён</string>
+    <string name="profile_feature_remove_account">Функция удаления аккаунта в разработке</string>
+    <string name="profile_email_label">Email:</string>
+    <string name="profile_display_name_label">Display Name:</string>
+    <!-- Profile Screen END -->
+
+    <!-- Upload Screen -->
+    <string name="upload_screen_error_uploading">Ошибка при добавлении автомобиля</string>
+    <string name="upload_screen_error_company_is_blank">Марка не может быть пустой</string>
+    <string name="upload_screen_error_model_is_blank">Модель не может быть пустой</string>
+    <string name="upload_screen_error_year_incorrect">Некорректный год выпуска</string>
+    <string name="upload_screen_error_power_incorrect">Некорректная мощность двигателя</string>
+    <string name="upload_screen_error_drivetype_incorrect">Тип привода не может быть пустым</string>
+    <string name="upload_screen_error_price_incorrect">Некорректная цена</string>
+    <string name="upload_screen_title">Добавить автомобиль</string>
+    <string name="upload_brand_label">Марка</string>
+    <string name="upload_model_label">Модель</string>
+    <string name="upload_year_label">Год выпуска</string>
+    <string name="upload_engine_label">Объем двигателя</string>
+    <string name="upload_engine_placeholder">Например: 2.0</string>
+    <string name="upload_power_label">Мощность (л.с.)</string>
+    <string name="upload_drive_label">Тип привода</string>
+    <string name="upload_drive_placeholder">Передний, задний, полный</string>
+    <string name="upload_price_label">Цена</string>
+    <string name="upload_select_photo_button">Выбрать фото</string>
+    <string name="upload_add_button">Добавить автомобиль</string>
+    <string name="upload_uploading">Загрузка:</string>
+    <string name="upload_success">Автомобиль успешно добавлен</string>
+    <string name="upload_selected_file_label">Выбранный файл:</string>
+    <string name="upload_button_text">Загрузить</string>
+    <!-- Upload Screen END -->
+
+    <!-- CarsList -->
+    <string name="cars_list_screen_title">Автомобили</string>
+    <string name="cars_list_empty">Нет автомобилей</string>
+    <string name="cars_list_add_first_car">Добавить первый автомобиль</string>
+    <string name="cars_list_error_loading">Ошибка загрузки автомобилей</string>
+    <string name="cars_list_sort_button">Сортировка</string>
+    <string name="cars_list_sort_title">Сортировка</string>
+    <string name="cars_list_sort_none">Без сортировки</string>
+    <string name="cars_list_sort_year_asc">Год выпуска (по возрастанию)</string>
+    <string name="cars_list_sort_year_desc">Год выпуска (по убыванию)</string>
+    <string name="cars_list_sort_price_asc">Цена (по возрастанию)</string>
+    <string name="cars_list_sort_price_desc">Цена (по убыванию)</string>
+    <string name="cars_list_sort_power_asc">Мощность (по возрастанию)</string>
+    <string name="cars_list_sort_power_desc">Мощность (по убыванию)</string>
+    <string name="cars_list_brand_label">Марка:</string>
+    <string name="cars_list_model_label">Модель:</string>
+    <string name="cars_list_year_label">Год:</string>
+    <string name="cars_list_engine_label">Двигатель:</string>
+    <string name="cars_list_power_label">Мощность:</string>
+    <string name="cars_list_drive_label">Привод:</string>
+    <string name="cars_list_price_label">Цена:</string>
+    <string name="cars_list_engine_volume_unit">л</string>
+    <string name="cars_list_power_unit">л.с.</string>
+    <string name="cars_list_price_unit">₽</string>
+    <string name="cars_list_add_car_button">Добавить</string>
+    <!-- CarsList END -->
+
+    <!-- Recovery Screen -->
+    <string name="recovery_screen_title">Восстановление аккаунта</string>
+    <string name="recovery_message">Ваш аккаунт был удален. Вы можете восстановить его в течение 7 дней.</string>
+    <string name="recovery_recover_button">Восстановить аккаунт</string>
+    <string name="recovery_delete_permanently_button">Удалить окончательно</string>
+    <string name="recovery_success">Аккаунт восстановлен успешно</string>
+    <string name="recovery_delete_success">Аккаунт удален окончательно</string>
+    <string name="recovery_error">Ошибка восстановления аккаунта</string>
+    <!-- Recovery Screen END -->
+
+    <!-- AuthRepository strings -->
+    <string name="auth_error_no_saved_session">Нет сохраненной сессии</string>
+    <string name="auth_error_session_expired">Сессия истекла или недействительна</string>
+    <string name="auth_error_auto_login_failed">Автоматический вход не удался</string>
+    <string name="auth_error_user_not_found">Пользователь не найден</string>
+    <string name="auth_error_deletion_failed">Ошибка удаления</string>
+    <string name="auth_error_unknown">Неизвестная ошибка</string>
+    <!-- AuthRepository strings END -->
 </resources>
